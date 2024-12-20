@@ -42,7 +42,8 @@ class WeatherService {
     console.log('Geocode Quary:', this.buildGeocodeQuery(query));   //Log the geocode query
     const data = await response.json();
     console.log('API Response: ', data);                 //Debugging purposes
-    console.log(`Latitude: ${data[]}`)
+    console.log(`Latitude: ${data[1].lat}`);
+    console.log(`Longitude: ${data[1].lon}`);            //Debugging purposes
 
 
     if (!data || data.length === 0) {
