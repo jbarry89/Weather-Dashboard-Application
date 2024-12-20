@@ -5,6 +5,8 @@ dotenv.config();
 interface Coordinates{
   latitude: number;
   longitude: number;
+  country?: string;
+  state?: string;
 }
 
 // TODO: Define a class for the Weather object
@@ -37,17 +39,36 @@ class WeatherService {
   // TODO: Create fetchLocationData method
   private async fetchLocationData(query: string) {
     const response = await fetch(this.buildGeocodeQuery(query));
+    console.log('Geocode Quary:', this.buildGeocodeQuery(query));   //Log the geocode query
     const data = await response.json();
+    console.log('API Response: ', data);                 //Debugging purposes
+    console.log(`Latitude: ${data[]}`)
+
+
+    if (!data || data.length === 0) {
+      throw new Error(`No Location Data found in Query: ${query}`);
+    }
+
     return this.destructureLocationData(data);
   }
 
   // TODO: Create destructureLocationData method
   private destructureLocationData(locationData: any[]): Coordinates {
-    return {
-      latitude: locationData[0].lat,
-      longitude: locationData[0].lon
+    if (!locationData[0] || typeof locationData[0].lat !== 'number' || typeof locationData[0].lon !== 'number') {
+      console.error('Invalid location data:', locationData);     //Debuggin purposes
+      throw new Error('Invalid location data format');
+    }
+
+    const {lat, lon, country, state} = locationData[0];
+    const coordinates: Coordinates = {
+      latitude: lat, 
+      longitude: lon, 
+      country, 
+      state
     };
+    return coordinates;
   }
+  
 
   // TODO: Create buildGeocodeQuery method
   private buildGeocodeQuery(query: string): string {
@@ -83,7 +104,6 @@ class WeatherService {
   // TODO: Complete buildForecastArray method: This method is used to display weather 
   // forcast for mulitple days
   private buildForecastArray(currentWeather: Weather, weatherData: any[]){
-    
     const forecastArray = weatherData.map(data => new Weather(
       data.main.temp,
       data.weather[0].description,
