@@ -17,10 +17,10 @@ class HistoryService {
   private async read() {
     try {
       const data = await fs.readFile("./db/searchHistory.json", "utf8");
-      return JSON.parse(data);
+      return data ? JSON.parse(data): [];
     } catch (err) {
       console.error("Error reading search history file:", err);
-      throw err;
+      return [];
     }
   }
 

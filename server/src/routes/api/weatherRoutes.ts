@@ -8,7 +8,6 @@ import WeatherService from '../../service/weatherService.js';
 router.post('/', async (req, res) => {
   // TODO: GET weather data from city name
   const cityName = req.body.cityName;
-  console.log(`This is the city name: ${cityName}`);  //This is for debugging purposes
   try{
     const weatherData = await WeatherService.getWeatherForCity(cityName);
 
