@@ -11,13 +11,19 @@ interface Coordinates{
 
 // TODO: Define a class for the Weather object
 class Weather{
+  city: string;
+  date: string;
   temperature: number;
-  description: string;
+  windSpeed: number;
+  humidity: number;
   icon: string;
 
-  constructor(temperature: number, description: string, icon: string){
+  constructor(city: string, date: string, temperature: number, windSpeed: number, humidity: number, icon: string){
+    this.city = city;
+    this.date = date;
     this.temperature = temperature;
-    this.description = description;
+    this.windSpeed = windSpeed;
+    this.humidity = humidity;
     this.icon = icon;
   }
 }
@@ -42,10 +48,7 @@ class WeatherService {
     console.log('Geocode Quary:', this.buildGeocodeQuery(query));   //Log the geocode query
     const data = await response.json();
     console.log('API Response: ', data);                 //Debugging purposes
-    console.log(`Latitude: ${data[1].lat}`);
-    console.log(`Longitude: ${data[1].lon}`);            //Debugging purposes
-
-
+   
     if (!data || data.length === 0) {
       throw new Error(`No Location Data found in Query: ${query}`);
     }
@@ -89,25 +92,44 @@ class WeatherService {
   // TODO: Create fetchWeatherData method
   private async fetchWeatherData(coordinates: Coordinates) {
     const response = await fetch(this.buildWeatherQuery(coordinates));
+
+    if(!response.ok){
+      throw new Error(`Failed to fetch weather data: ${response.statusText}`)
+    }
     return response.json();
 
   }
 
   // TODO: Build parseCurrentWeather method
   private parseCurrentWeather(response: any) {
+    if (!response.city || !response.list || response.list.length === 0) {
+      throw new Error('Invalid Weather Data Format');
+    }
+
+    const city = response.city.name;
+    const currentWeatherData = response.list[0];
+
     return new Weather(
-      response.main.temp,
-      response.weather[0].description,
-      response.weather[0].icon
+      city,
+      currentWeatherData.dt_txt,
+      currentWeatherData.main.temp,
+      currentWeatherData.wind.speed,
+      currentWeatherData.main.humidity,
+      currentWeatherData.weather[0].icon
+      
     );
   }
 
   // TODO: Complete buildForecastArray method: This method is used to display weather 
   // forcast for mulitple days
-  private buildForecastArray(currentWeather: Weather, weatherData: any[]){
-    const forecastArray = weatherData.map(data => new Weather(
+  private buildForecastArray(currentWeather: Weather, weatherData: any){
+    const city = weatherData.city.name;
+    const forecastArray = weatherData.list.map((data: any) => new Weather(
+      city,
+      data.dt_txt,
       data.main.temp,
-      data.weather[0].description,
+      data.wind.speed,
+      data.main.humidity,
       data.weather[0].icon
     ));
     
@@ -118,13 +140,20 @@ class WeatherService {
   
   // TODO: Complete getWeatherForCity method
   async getWeatherForCity(city: string): Promise<Weather[]> {
-    this.cityName = city;
-    const coordinates = await this.fetchAndDestructureLocationData();
-    const weatherData = await this.fetchWeatherData(coordinates);
-    const currentWeather = this.parseCurrentWeather(weatherData);
-    const forecastArray = this.buildForecastArray(currentWeather, weatherData.list)
+    try {
+      this.cityName = city;
+      const coordinates = await this.fetchAndDestructureLocationData();
+      const weatherData = await this.fetchWeatherData(coordinates);
+      const currentWeather = this.parseCurrentWeather(weatherData);
+      const forecastArray = this.buildForecastArray(currentWeather, weatherData.list)
+      
+      return forecastArray;
+      
+    } catch (err) {
+        console.error('Error fetching weather:', err);
+        throw new Error(`Failed to fetch weather for city: ${city}`);
+    }
     
-    return forecastArray;
   }
 }
 
