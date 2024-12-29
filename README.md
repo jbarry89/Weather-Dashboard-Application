@@ -13,15 +13,15 @@
   * [Questions](#questions)
   
   ## Description
-  
+  This application allows the user to retrieve weather data using the Open Weather API and render it on a web browser.
 
   ## Installation
-  Installation Required:  JavaScript, Node JS, `inquirer` and `fs` package, and `npm`.
+  Installation Required:  JavaScript, Node JS, Express JS, Vite, TypeScript `fs` package, and `npm`.
 
   ## Usage 
-  Here is an example screenshot of the Vehicle Builder Typescript application:
+  Here is an example screenshot of the Weather Dashboard application:
 
-  [Weather Dashboard Application Video Link](https://drive.google.com/file/d/16KyDe_zXEui27vndjN_NUxvC63fjBEIO/view)
+  [Weather Dashboard Application Video Link](https://drive.google.com/file/d/1fdIK35gxklZhVUViSZdUWjV_7RyqdVZX/view)
 
   ![Weather Dashboard API Application Screenshot](./assets/weather-dashboard-screenshot.png)
   
@@ -34,7 +34,11 @@
 
   
   ## Test 
-  N/A
+  ```bash
+  npm install
+  npm run start:dev
+  ```
+  Navigate to the filepath of where the code is saved. Type the above code in the terminal. It will start and run the code on the server on both client and server folders.
 
   ## License
   This project is Licensed under the MIT License.
